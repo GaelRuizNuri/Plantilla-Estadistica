@@ -93,7 +93,7 @@ def chi_obs_bondad_ajuste(observados, probs):
     print(f'Esperados: {esperados}')
     print(f'Grados de libertad: {gl}')
     print(f'Chi Cuadrado observado: {chi_observado}')
-    return chi_observado, gl
+    return chi_observado, gl, observados, esperados
 
 
 def f_obs_anova(grupos):
@@ -143,18 +143,48 @@ def chi_obs_independencia(tabla_obs):
     print(f'Chi Cuadrado observado: {chi_obs}\n'
           f'Grados de libertad = {gl}'
     )
-    return chi_obs,gl
+    return chi_obs, gl
 
-#Ej práctica #3 de la PPT 
-expresiones = [
-    (None,1.45),  # x < 1.45
-    (1.45,1.55),  # 1.45 < x < 1.55
-    (1.55,1.65),  # 1.55 < x < 1.65
-    (1.65,1.75),  # 1.65 < x < 1.75
-    (1.75, 1.85), # 1.75 < x < 1.85
-    (1.85, 1.95), # 1.85 < x < 1.95
-    (1.95, None)  # 1.95 < x
-]
 
-dist = norm(loc=1.76, scale=0.1)
-chi_obs_bondad_ajuste([2,4,41,110,121,48,9], probabilidades_continuas(dist, expresiones))
+import numpy as np
+
+def regresion_lineal_simple(X, Y, alpha=None, beta=None):
+    X = np.array(X, dtype=float)
+    Y = np.array(Y, dtype=float)
+    n = len(X)
+    suma_x = np.sum(X)
+    suma_y = np.sum(Y)
+    suma_cuadrados_x = np.sum(X ** 2)
+    suma_cuadrados_y = np.sum(Y ** 2)
+    suma_x_y = np.sum(X * Y)
+    Sxx = suma_cuadrados_x - (suma_x ** 2) / n
+    Syy = suma_cuadrados_y - (suma_y ** 2) / n
+    Sxy = suma_x_y - (suma_x * suma_y) / n
+
+    if Syy == 0:
+        r = 0
+    else:
+        r = Sxy / np.sqrt(Sxx * Syy)
+
+    if beta is None and alpha is not None: beta = (suma_x_y - alpha * suma_x) / suma_cuadrados_x
+    elif beta is not None and alpha is None: alpha = (suma_y - beta * suma_x) / n
+    elif beta is None and alpha is None: beta, alpha = np.polyfit(X, Y, 1)
+
+    print(f'Cantidad de datos, n = {n}\n'
+      f'X = {X}\n'
+      f'Y = {Y}\n'
+      f'Σx = {suma_x}\n'
+      f'Σy = {suma_y}\n'
+      f'Σx^2 = {suma_cuadrados_x}\n'
+      f'Σy^2 = {suma_cuadrados_y}\n'
+      f'Σxy = {suma_x_y}\n'
+      f'Sxx = {Sxx}\n'
+      f'Syy = {Syy}\n'
+      f'Sxy = {Sxy}\n'
+      f'α = {alpha}\n'
+      f'β = {beta}\n'
+      f'r = {r}\n'
+      f'R² = {r ** 2}')
+
+    return lambda x: alpha + beta * x, alpha, beta, r
+
