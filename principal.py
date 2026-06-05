@@ -11,15 +11,7 @@ LONG = 40
 TMENU = "MENU"
 TGRAFICAS = "GRÁFICAS"
 TINTERVALOS = "INTERVALOS"
- 
- 
-# Data
-X = [2,6,8,10,12,14,16]
-Y = [1,5,8,11,15,20,25]
- 
-observados = [[np.random.randint(1, 7) for _ in range(1000)].count(i) for i in range(1,7)]
-esperados = 6*[1000/6]
- 
+
  
 def menu_graficar():
     while True:
@@ -40,8 +32,8 @@ def menu_graficar():
  
         elif opcion == '2':           
             print("\n--- Gráfica Regresión Lineal ---")
-            #Yx, a, b, r = regresion.regresion_lineal_simple(X, Y)
-            #graficas.regresion_lineal_simple(Yx, X, Y, a, b, r, show=True)
+            Yx, a, b, _, _, _, r, _, _ = regresion.regresion_lineal_simple(X, Y)
+            graficas.regresion_lineal_simple(Yx, X, Y, a, b, r, show=True)
             
         elif opcion == '3':
             print("\n--- Gráfica Distribuciones ---")
@@ -68,25 +60,21 @@ def menu_intervalos():
  
         if opcion == '1':
             print("\n--- IC para β ---")
-            _, a, b, _ = regresion.regresion_lineal_simple(X, Y)
-            intervalos.ic_parametro_beta(X, Y, a, b)
+            intervalos.ic_parametro_beta(X, Y)
  
         elif opcion == '2':
             print("\n--- IC para α ---")
-            _, a, b, _ = regresion.regresion_lineal_simple(X, Y)
-            intervalos.ic_parametro_alpha(X, Y, a, b)
+            intervalos.ic_parametro_alpha(X, Y)
  
         elif opcion == '3':
             print("\n--- IC para E(Y | x0) ---")
-            _, a, b, _ = regresion.regresion_lineal_simple(X, Y)
             x0 = float(input("Ingrese x0: "))
-            intervalos.ic_media_condicional(X, Y, a, b, x0)
+            intervalos.ic_media_condicional(X, Y, x0)
  
         elif opcion == '4':
             print("\n--- IP para y0 individual ---")
-            _, a, b, _ = regresion.regresion_lineal_simple(X, Y)
             x0 = float(input("Ingrese x0: "))
-            intervalos.ip_prediccion_individual(X, Y, a, b, x0)
+            intervalos.ip_prediccion_individual(X, Y, x0)
  
         elif opcion == '0':
             break
@@ -123,7 +111,7 @@ def menu():
         elif opcion == '4':
             print("\n--- Regresión Lineal ---")
             #regresion.regresion_lineal_simple(X, Y)
- 
+
         elif opcion == '5':
             menu_intervalos()
  

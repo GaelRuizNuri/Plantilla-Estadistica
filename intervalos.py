@@ -1,144 +1,165 @@
 from scipy.stats import t
 import numpy as np
 
+from regresion import regresion_lineal_simple
 
-def calcular_estadisticos(X, Y, alpha, beta):
+
+def calcular_estadisticos(X, Y, alpha=None, beta=None):
     X = np.array(X, dtype=float)
     Y = np.array(Y, dtype=float)
+
+    modelo, alpha, beta, Sxx, Syy, Sxy, r, s_cuad, gl = regresion_lineal_simple(
+        X, Y, alpha=alpha, beta=beta
+    )
+
     n = len(X)
-
-    suma_x = np.sum(X)
-    suma_y = np.sum(Y)
-    suma_cuadrados_x = np.sum(X ** 2)
-    suma_cuadrados_y = np.sum(Y ** 2)
-    suma_x_y = np.sum(X * Y)
-
-    Sxx = suma_cuadrados_x - (suma_x ** 2) / n
-    Syy = suma_cuadrados_y - (suma_y ** 2) / n
-    Sxy = suma_x_y - (suma_x * suma_y) / n
-
-    grados_libertad = n - 2
-    suma_cuadrados_error = Syy - beta * Sxy
-    varianza_error = suma_cuadrados_error / grados_libertad #s²
-    error_estandar = np.sqrt(varianza_error) #s
 
     return {
         'n': n,
-        'suma_x': suma_x,
-        'suma_y': suma_y,
-        'suma_cuadrados_x': suma_cuadrados_x,
-        'suma_cuadrados_y': suma_cuadrados_y,
-        'suma_x_y': suma_x_y,
+        'X': X,
+        'Y': Y,
+        'alpha': alpha,
+        'beta': beta,
         'Sxx': Sxx,
         'Syy': Syy,
         'Sxy': Sxy,
-        'media_x': suma_x / n,
-        'media_y': suma_y / n,
-        'grados_libertad': grados_libertad,
-        'varianza_error': varianza_error,
-        'error_estandar': error_estandar,
+        'r': r,
+        'r_cuadrado': r ** 2,
+        'media_x': np.mean(X),
+        'media_y': np.mean(Y),
+        'gl': gl,
+        'varianza_error': s_cuad,
+        'error_estandar': np.sqrt(s_cuad),
+        'modelo': modelo
     }
 
 
-def ic_parametro_beta(X, Y, alpha, beta, confianza=0.95):
-    est = calcular_estadisticos(X, Y, alpha, beta)
+def obtener_t(confianza, gl):
     delta = 1 - confianza
-    valor_t = t.ppf(1 - delta / 2, df=est['grados_libertad'])
+    return t.ppf(1 - delta / 2, df=gl)
+
+
+def imprimir_intervalo(titulo, confianza, valor_t, etiqueta_intervalo, limite_inferior, limite_superior):
+    print(f"\n{'-'*30}")
+    print(f"{titulo} {confianza*100:.0f}%")
+    print(f"{'-'*30}")
+    print(f"t(δ/2, n-2) = {valor_t:.6f}")
+    print(f"{etiqueta_intervalo}: ]{limite_inferior:.6f}, {limite_superior:.6f}[")
+
+
+def ic_parametro_beta(X, Y, alpha=None, beta=None, confianza=0.95):
+    est = calcular_estadisticos(X, Y, alpha, beta)
+
+    beta = est['beta']
+    valor_t = obtener_t(confianza, est['gl'])
+
     error_estandar_beta = est['error_estandar'] * np.sqrt(1 / est['Sxx'])
     margen = valor_t * error_estandar_beta
+
     limite_inferior = beta - margen
     limite_superior = beta + margen
 
-    print(f"\n{'='*45}")
-    print(f"IC {confianza*100:.0f}% para β")
-    print(f"{'='*45}")
-    print(f"s² = {est['varianza_error']:.6f}")
-    print(f"s = {est['error_estandar']:.6f}")
-    print(f"g.l. = {est['grados_libertad']}")
-    print(f"t(δ/2, n-2) = {valor_t:.6f}")
-    #print(f"Error estándar de = {error_estandar_beta:.6f}")
-    #print(f"Margen = {margen:.6f}")
-    print(f"β estimado (b) = {beta:.6f}")
-    print(f"IC: ]{limite_inferior:.6f}, {limite_superior:.6f}[")
+    imprimir_intervalo(
+        titulo="IC para β",
+        confianza=confianza,
+        valor_t=valor_t,
+        etiqueta_intervalo="IC",
+        limite_inferior=limite_inferior,
+        limite_superior=limite_superior
+    )
 
     return limite_inferior, limite_superior
 
 
-def ic_parametro_alpha(X, Y, alpha, beta, confianza=0.95):
+def ic_parametro_alpha(X, Y, alpha=None, beta=None, confianza=0.95):
     est = calcular_estadisticos(X, Y, alpha, beta)
-    delta = 1 - confianza
-    valor_t = t.ppf(1 - delta / 2, df=est['grados_libertad'])
-    error_estandar_alpha = est['error_estandar'] * np.sqrt(est['suma_cuadrados_x'] / (est['n'] * est['Sxx']))
+
+    alpha = est['alpha']
+    valor_t = obtener_t(confianza, est['gl'])
+
+    suma_cuadrados_x = np.sum(est['X'] ** 2)
+
+    error_estandar_alpha = est['error_estandar'] * np.sqrt(
+        suma_cuadrados_x / (est['n'] * est['Sxx'])
+    )
+
     margen = valor_t * error_estandar_alpha
+
     limite_inferior = alpha - margen
     limite_superior = alpha + margen
 
-    print(f"\n{'='*45}")
-    print(f"IC {confianza*100:.0f}% para α (intercepto)")
-    print(f"{'='*45}")
-    print(f"s² = {est['varianza_error']:.6f}")
-    print(f"s = {est['error_estandar']:.6f}")
-    print(f"g.l. = {est['grados_libertad']}")
-    print(f"t(δ/2, n-2) = {valor_t:.6f}")
-    #print(f"Error estándar de α = {error_estandar_alpha:.6f}")
-    #print(f"Margen = {margen:.6f}")
-    print(f"α estimado (a) = {alpha:.6f}")
-    print(f"IC: ]{limite_inferior:.6f}, {limite_superior:.6f}[")
+    imprimir_intervalo(
+        titulo="IC para α",
+        confianza=confianza,
+        valor_t=valor_t,
+        etiqueta_intervalo="IC",
+        limite_inferior=limite_inferior,
+        limite_superior=limite_superior
+    )
 
     return limite_inferior, limite_superior
 
 
-def ic_media_condicional(X, Y, alpha, beta, x0, confianza=0.95):
+def ic_media_condicional(X, Y, x0, alpha=None, beta=None, confianza=0.95):
     est = calcular_estadisticos(X, Y, alpha, beta)
-    delta = 1 - confianza
-    valor_t = t.ppf(1 - delta / 2, df=est['grados_libertad'])
+
+    alpha = est['alpha']
+    beta = est['beta']
+    valor_t = obtener_t(confianza, est['gl'])
+
     prediccion_puntual = alpha + beta * x0
-    factor_variabilidad = 1/est['n'] + (x0 - est['media_x'])**2 / est['Sxx']
+
+    factor_variabilidad = (
+        1 / est['n'] +
+        (x0 - est['media_x']) ** 2 / est['Sxx']
+    )
+
     error_estandar_media = est['error_estandar'] * np.sqrt(factor_variabilidad)
     margen = valor_t * error_estandar_media
+
     limite_inferior = prediccion_puntual - margen
     limite_superior = prediccion_puntual + margen
 
-    print(f"\n{'='*45}")
-    print(f"IC {confianza*100:.0f}% para E(Y | x0 = {x0})")
-    print(f"{'='*45}")
-    print(f"s² = {est['varianza_error']:.6f}")
-    print(f"s = {est['error_estandar']:.6f}")
-    print(f"g.l. = {est['grados_libertad']}")
-    print(f"t(δ/2, n-2) = {valor_t:.6f}")
-    print(f"x̄ = {est['media_x']:.6f}")
-    print(f"ŷ0 = a + b·x0 = {prediccion_puntual:.6f}")
-    print(f"Factor (1/n+(x0-x̄)²/Sxx) = {factor_variabilidad:.6f}")
-    #print(f"Error estándar de ŷ0 = {error_estandar_media:.6f}")
-    #print(f"Margen = {margen:.6f}")
-    print(f"IC: ]{limite_inferior:.6f}, {limite_superior:.6f}[")
+    imprimir_intervalo(
+        titulo=f"IC para E(Y | x0 = {x0})",
+        confianza=confianza,
+        valor_t=valor_t,
+        etiqueta_intervalo="IC",
+        limite_inferior=limite_inferior,
+        limite_superior=limite_superior
+    )
 
     return limite_inferior, limite_superior
 
 
-def ip_prediccion_individual(X, Y, alpha, beta, x0, confianza=0.95):
+def ip_prediccion_individual(X, Y, x0, alpha=None, beta=None, confianza=0.95):
     est = calcular_estadisticos(X, Y, alpha, beta)
-    delta = 1 - confianza
-    valor_t = t.ppf(1 - delta / 2, df=est['grados_libertad'])
+
+    alpha = est['alpha']
+    beta = est['beta']
+    valor_t = obtener_t(confianza, est['gl'])
+
     prediccion_puntual = alpha + beta * x0
-    factor_variabilidad = 1 + 1/est['n'] + (x0 - est['media_x'])**2 / est['Sxx']
+
+    factor_variabilidad = (
+        1 +
+        1 / est['n'] +
+        (x0 - est['media_x']) ** 2 / est['Sxx']
+    )
+
     error_estandar_prediccion = est['error_estandar'] * np.sqrt(factor_variabilidad)
     margen = valor_t * error_estandar_prediccion
+
     limite_inferior = prediccion_puntual - margen
     limite_superior = prediccion_puntual + margen
 
-    print(f"\n{'='*45}")
-    print(f"IP {confianza*100:.0f}% para y0 individual (x0 = {x0})")
-    print(f"{'='*45}")
-    print(f"s² = {est['varianza_error']:.6f}")
-    print(f"s = {est['error_estandar']:.6f}")
-    print(f"g.l. = {est['grados_libertad']}")
-    print(f"t(δ/2, n-2) = {valor_t:.6f}")
-    print(f"x̄ = {est['media_x']:.6f}")
-    print(f"ŷ0 = a + b·x0 = {prediccion_puntual:.6f}")
-    print(f"Factor (1+1/n+(x0-x̄)²/Sxx) = {factor_variabilidad:.6f}")
-    #print(f"Error estándar de y0 = {error_estandar_prediccion:.6f}")
-    #print(f"Margen = {margen:.6f}")
-    print(f"IP: ]{limite_inferior:.6f}, {limite_superior:.6f}[")
+    imprimir_intervalo(
+        titulo=f"IP para y0 individual cuando x0 = {x0}",
+        confianza=confianza,
+        valor_t=valor_t,
+        etiqueta_intervalo="IP",
+        limite_inferior=limite_inferior,
+        limite_superior=limite_superior
+    )
 
     return limite_inferior, limite_superior
