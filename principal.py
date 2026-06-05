@@ -5,20 +5,22 @@ import bondad_ajuste
 import independencia
 import anova
 import regresion
+import intervalos
 import graficas
 LONG = 40
 TMENU = "MENU"
 TGRAFICAS = "GRÁFICAS"
-
-
+TINTERVALOS = "INTERVALOS"
+ 
+ 
 # Data
 X = [2,6,8,10,12,14,16]
 Y = [1,5,8,11,15,20,25]
-
+ 
 observados = [[np.random.randint(1, 7) for _ in range(1000)].count(i) for i in range(1,7)]
 esperados = 6*[1000/6]
-
-
+ 
+ 
 def menu_graficar():
     while True:
         print("\n" + "="*LONG)
@@ -48,8 +50,48 @@ def menu_graficar():
             
         elif opcion == '0':
             break
-
-
+ 
+ 
+def menu_intervalos():
+    while True:
+        print("\n" + "="*LONG)
+        print(" "*((LONG - len(TINTERVALOS)) // 2) + TINTERVALOS)
+        print("="*LONG)
+        print("1. IC para β")
+        print("2. IC para α")
+        print("3. IC para E(Y | x0)")
+        print("4. IP para y0 individual")
+        print("0. Salir")
+        print("-"*LONG)
+ 
+        opcion = input("Opción: ")
+ 
+        if opcion == '1':
+            print("\n--- IC para β ---")
+            _, a, b, _ = regresion.regresion_lineal_simple(X, Y)
+            intervalos.ic_parametro_beta(X, Y, a, b)
+ 
+        elif opcion == '2':
+            print("\n--- IC para α ---")
+            _, a, b, _ = regresion.regresion_lineal_simple(X, Y)
+            intervalos.ic_parametro_alpha(X, Y, a, b)
+ 
+        elif opcion == '3':
+            print("\n--- IC para E(Y | x0) ---")
+            _, a, b, _ = regresion.regresion_lineal_simple(X, Y)
+            x0 = float(input("Ingrese x0: "))
+            intervalos.ic_media_condicional(X, Y, a, b, x0)
+ 
+        elif opcion == '4':
+            print("\n--- IP para y0 individual ---")
+            _, a, b, _ = regresion.regresion_lineal_simple(X, Y)
+            x0 = float(input("Ingrese x0: "))
+            intervalos.ip_prediccion_individual(X, Y, a, b, x0)
+ 
+        elif opcion == '0':
+            break
+ 
+ 
 def menu():
     while True:
         print("\n" + "="*LONG)
@@ -59,7 +101,8 @@ def menu():
         print("2. Independencia")
         print("3. ANOVA")
         print("4. Regresión Lineal")
-        print("5. Gráficar")
+        print("5. Intervalos")
+        print("6. Gráficar")
         print("0. Salir")
         print("-"*LONG)
         
@@ -80,12 +123,15 @@ def menu():
         elif opcion == '4':
             print("\n--- Regresión Lineal ---")
             #regresion.regresion_lineal_simple(X, Y)
-            
+ 
         elif opcion == '5':
+            menu_intervalos()
+ 
+        elif opcion == '6':
             menu_graficar()
             
         elif opcion == '0':
             break
-
+ 
 if __name__ == '__main__':
     menu()
