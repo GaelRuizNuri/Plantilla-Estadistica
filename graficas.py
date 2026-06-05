@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib
-matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
+matplotlib.use("TkAgg")
 
 def regresion_lineal_simple(f, X, Y, alpha, beta, r, inicio=None, fin=None, cantidad=100, show = False, file_name = None):
     X = np.array(X, dtype=float)
