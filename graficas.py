@@ -28,6 +28,57 @@ def regresion_lineal_simple(f, X, Y, alpha, beta, r, inicio=None, fin=None, cant
     if (file_name is not None): plt.savefig(file_name, dpi=300, bbox_inches="tight")
     if (show): plt.show()
 
+
+def regresion_no_lineal_simple(modelo, X, Y, formula="Modelo no lineal", r2=None, inicio=None, fin=None, cantidad=100, show=True, file_name=None):
+    X = np.array(X, dtype=float)
+    Y = np.array(Y, dtype=float)
+
+    if inicio is None:
+        inicio = np.min(X)
+
+    if fin is None:
+        fin = np.max(X)
+
+    x_grafica = np.linspace(inicio, fin, cantidad)
+    y_grafica = modelo(x_grafica)
+
+    plt.figure(figsize=(8, 5))
+    plt.scatter(X, Y, label="Puntos dados")
+    plt.plot(x_grafica, y_grafica, label="Modelo ajustado")
+
+    plt.xlabel("X")
+    plt.ylabel("Y")
+
+    if r2 is not None:
+        plt.title(f"{formula}\nR² = {r2:.4f}")
+    else:
+        plt.title(formula)
+
+    plt.legend()
+    plt.grid(True)
+
+    if file_name is not None: plt.savefig(file_name, dpi=300, bbox_inches="tight")
+
+    if show: plt.show()
+
+
+def puntos(X, Y, titulo="Puntos dados", show=False, file_name=None):
+    X = np.array(X, dtype=float)
+    Y = np.array(Y, dtype=float)
+
+    plt.figure(figsize=(8, 5))
+    plt.scatter(X, Y, label="Puntos dados")
+
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.title(titulo)
+    plt.legend()
+    plt.grid(True)
+
+    if file_name is not None: plt.savefig(file_name, dpi=300, bbox_inches="tight")
+
+    if show: plt.show()
+
 def bondad_ajuste(observados, esperados, etiquetas=None, show = False, file_name = None):
     observados = np.array(observados, dtype=float)
     esperados = np.array(esperados, dtype=float)
