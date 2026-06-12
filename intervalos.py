@@ -1,8 +1,6 @@
 from scipy.stats import t
+from regresion_univariada import regresion_lineal_simple
 import numpy as np
-
-from regresion import regresion_lineal_simple
-
 
 def calcular_estadisticos(X, Y, alpha=None, beta=None):
     X = np.array(X, dtype=float)

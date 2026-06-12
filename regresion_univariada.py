@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def regresion_lineal_simple(X, Y, alpha=None, beta=None):
     X = np.array(X, dtype=float)
     Y = np.array(Y, dtype=float)
@@ -38,7 +37,6 @@ def regresion_lineal_simple(X, Y, alpha=None, beta=None):
           f'R² = {r ** 2}')
 
     return lambda x: alpha + beta * x, alpha, beta, Sxx, Syy, Sxy, r, s_cuad, gl
-
 
 
 def r2_original(Y, Y_pred):
@@ -196,6 +194,7 @@ def regresion_no_lineal_linealizable(X, Y, tipo):
         "s_cuad": s_cuad,
         "gl": gl
     }
+
 
 def comparar_modelos_no_lineales(X, Y, modelos=None):
     if modelos is None:

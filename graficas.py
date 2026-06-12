@@ -3,6 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use("TkAgg")
 
+
 def regresion_lineal_simple(f, X, Y, alpha, beta, r, inicio=None, fin=None, cantidad=100, show = False, file_name = None):
     X = np.array(X, dtype=float)
     Y = np.array(Y, dtype=float)
@@ -79,6 +80,7 @@ def puntos(X, Y, titulo="Puntos dados", show=False, file_name=None):
 
     if show: plt.show()
 
+
 def bondad_ajuste(observados, esperados, etiquetas=None, show = False, file_name = None):
     observados = np.array(observados, dtype=float)
     esperados = np.array(esperados, dtype=float)
@@ -103,6 +105,7 @@ def bondad_ajuste(observados, esperados, etiquetas=None, show = False, file_name
     if (file_name is not None): plt.savefig(file_name, dpi=300, bbox_inches="tight")
     if (show): plt.show()
 
+
 def distribucion_discreta(dist, inicio, fin, titulo="Distribución discreta", show = False, file_name = None):
     x = np.arange(inicio, fin + 1)
     y = dist.pmf(x)
@@ -115,6 +118,7 @@ def distribucion_discreta(dist, inicio, fin, titulo="Distribución discreta", sh
     if (file_name is not None): plt.savefig(file_name, dpi=300, bbox_inches="tight")
     if (show): plt.show()
 
+
 def distribucion_continua(dist, inicio, fin, cantidad=300, titulo="Distribución continua", show = False, file_name = None):
     x = np.linspace(inicio, fin, cantidad)
     y = dist.pdf(x)
@@ -126,4 +130,3 @@ def distribucion_continua(dist, inicio, fin, cantidad=300, titulo="Distribución
     plt.grid(True)
     if (file_name is not None): plt.savefig(file_name, dpi=300, bbox_inches="tight")
     if (show): plt.show()
-
