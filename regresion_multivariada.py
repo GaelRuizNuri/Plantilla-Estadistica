@@ -73,7 +73,8 @@ def regresion_multivariada(X1, X2, Y, nx1="x1", nx2="x2", ny="y"):
         print(f"b{i} = {B_orig[i]}")
         
     print("\n\n--- Ecuación Final ---")
-    ecuacion = f"{ny.lower()} = {B_orig[0]}"
+    modelo = t_y if t_y else ny.lower()
+    ecuacion = f"{modelo} = {B_orig[0]}"
     for i in range(1, len(B_orig)):
         ecuacion += f" + {B_orig[i]}({t_xs[i-1].lower()})"
     print(f"{ecuacion}")
