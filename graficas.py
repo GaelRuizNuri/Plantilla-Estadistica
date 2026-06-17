@@ -44,6 +44,7 @@ def regresion_no_lineal_simple(modelo, X, Y, formula="Modelo no lineal", r2=None
     y_grafica = modelo(x_grafica)
 
     plt.figure(figsize=(8, 5))
+    plt.plot(x_grafica, y_grafica, color="red", label="Recta de regresión")
     plt.scatter(X, Y, label="Puntos dados")
     plt.plot(x_grafica, y_grafica, label="Modelo ajustado")
 

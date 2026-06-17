@@ -51,8 +51,10 @@ def menu_graficar():
 
         elif opcion == '3':           
             print("\n--- Gráfica Regresión No Lineal Simple ---")
-            #est = regresion_univariada.regresion_no_lineal_linealizable(X, Y, tipo="exponencial") # exponencial, inverso, potencial, logaritmico
-            #graficas.regresion_no_lineal_simple(est["modelo"], X, Y, r2 = est["r2_original"], show=True)
+            tipo = input("Ingrese el tipo de modelo no lineal (exponencial, potencial, logaritmico, hiperbolica, reciproco): ").strip().lower()
+            tipo = None if tipo == "" else tipo            
+            est = regresion_univariada.regresion_no_lineal_linealizable(X, Y, tipo = tipo, alpha = 0) # exponencial, potencial, logaritmico, hiperbolica, reciproco
+            graficas.regresion_no_lineal_simple(est["modelo"], X, Y, r2 = est["r2_original"], show=True)
             
         elif opcion == '4':
             print("\n--- Gráfica Distribuciones ---")
@@ -65,7 +67,7 @@ def menu_graficar():
             
         elif opcion == '0':
             break
- 
+
 
 def menu_intervalos():
     while True:
@@ -87,7 +89,7 @@ def menu_intervalos():
  
         elif opcion == '2':
             print("\n--- IC para α ---")
-            #intervalos.ic_parametro_alpha(X, Y)
+            intervalos.ic_parametro_alpha(X, Y)
  
         elif opcion == '3':
             print("\n--- IC para E(Y | x0) ---")
@@ -101,9 +103,10 @@ def menu_intervalos():
  
         elif opcion == '0':
             break
- 
+
 
 def menu():
+    global X, Y, X1, X2
     while True:
         print("\n" + "="*LONG)
         print(" "*((LONG - len(TMENU)) // 2) + TMENU)
@@ -140,15 +143,20 @@ def menu():
 
         elif opcion == '5':
             print("\n--- Regresión No Lineal Simple (Univariada) ---")
-            #regresion_univariada.regresion_no_lineal_linealizable(X, Y)
+            tipo = input("Ingrese el tipo de modelo no lineal (exponencial, potencial, logaritmico, hiperbolica, reciproco): ").strip().lower()
+            tipo = None if tipo == "" else tipo
+            est = regresion_univariada.regresion_no_lineal_linealizable(X, Y, tipo = tipo, alpha = 0) # exponencial, potencial, logaritmico, hiperbolica, reciproco
+            if input("¿Desea cambiar X & Y a sus versiones lineales? (s/n): ").lower() == "s":
+                X = est["X_transformado"]
+                Y = est["Y_transformado"]
 
         elif opcion == '6':
             print("\n--- Comparar Modelos No Lineales (Univariada) ---")
-            #regresion_univariada.comparar_modelos_no_lineales(X, Y)
+            regresion_univariada.comparar_modelos_no_lineales(X, Y)
 
         elif opcion == '7':
             print("\n--- Regresión Multivariada (Lineal y No Lineal) ---")
-            #regresion_multivariada.regresion_multivariada(X1, X2, Y, nombre_x1, nombre_x2, nombre_y)
+            regresion_multivariada.regresion_multivariada(X1, X2, Y, nombre_x1, nombre_x2, nombre_y)
 
         elif opcion == '8':
             menu_intervalos()
