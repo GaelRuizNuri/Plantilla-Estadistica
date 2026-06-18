@@ -57,7 +57,7 @@ def regresion_multivariada(X1, X2, Y, nx1="x1", nx2="x2", ny="y"):
     for i in range(len(B)):
         print(f"b{i}' = {B[i]}")
         
-    print("\n--- Transformaciones de B ---")
+    print("\n--- Transformaciones de B (No cambiar si se requiere evaluar la ecuación lineal) ---")
     B_orig = []
     for i in range(len(B)):
         t_b = input(f"Transformación para b{i} original: ").strip()
@@ -72,7 +72,7 @@ def regresion_multivariada(X1, X2, Y, nx1="x1", nx2="x2", ny="y"):
     for i in range(len(B_orig)):
         print(f"b{i} = {B_orig[i]}")
         
-    print("\n\n--- Ecuación Final ---")
+    print("\n\n--- Ecuación Lineal Final ---")
     modelo = t_y if t_y else ny.lower()
     ecuacion = f"{modelo} = {B_orig[0]}"
     for i in range(1, len(B_orig)):
@@ -82,7 +82,7 @@ def regresion_multivariada(X1, X2, Y, nx1="x1", nx2="x2", ny="y"):
 
 
 def evaluar_modelo(nx1, nx2, ny, B_orig, t_xs):
-    resp = input("\n¿Evaluar el modelo? (s/n): ").strip().lower()
+    resp = input("\n¿Evaluar el modelo? (s/n):\nNota: Si realizó transformaciones de B el resultado puede ser incorrecto\n").strip().lower()
     if resp == 's':
         print("\n--- Evaluar el Modelo ---")
         try:
